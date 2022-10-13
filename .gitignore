@@ -36,6 +36,5 @@ yarn-error.log*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-/util/firebase.js
 .vercel
 yarn.lock
