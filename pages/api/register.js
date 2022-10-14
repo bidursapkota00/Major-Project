@@ -13,11 +13,15 @@ const handler = nextConnect({
 
 handler.post(async (req, res) => {
   const { name, email, password, number, citizenship } = req.body;
-  console.log(name);
-  // set(ref(db, '/register'), {
-  //   name1: 'name1',
-  // });
-  res.status(500).send({ error: 'failed to fetch data' });
+  set(ref(db, `/users/${Date.now()}`), {
+    name,
+    email,
+    password,
+    number,
+    citizenship,
+    new: true,
+  });
+  res.status(200).send({ message: 'Successfully Registered' });
 });
 
 export default handler;
