@@ -14,7 +14,7 @@ const handler = nextConnect({
 handler.post(async (req, res) => {
   const { name, email, password, number, citizenship } = req.body;
   try {
-    set(ref(db, `/users/${Date.now()}`), {
+    set(ref(db, `/users/1`), {
       name,
       email,
       password,
