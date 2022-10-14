@@ -21,7 +21,7 @@ handler.post(async (req, res) => {
     citizenship,
     new: true,
   });
-  res.status(200).send({ message: 'Successfully Registered' });
+  res.status(200).send({ message: `Successfully Registered ${name}` });
 });
 
 export default handler;
