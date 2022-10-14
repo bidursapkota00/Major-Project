@@ -12,9 +12,11 @@ const handler = nextConnect({
 });
 
 handler.post(async (req, res) => {
-  set(ref(db, '/register'), {
-    name1: 'name1',
-  });
+  const { name, email, password, number, citizenship } = req.body;
+  console.log(name);
+  // set(ref(db, '/register'), {
+  //   name1: 'name1',
+  // });
   res.status(500).send({ error: 'failed to fetch data' });
 });
 
