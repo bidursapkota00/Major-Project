@@ -1,6 +1,6 @@
 import { db } from '../util/firebase';
 import { ref, onValue } from 'firebase/database';
-import { Table } from 'antd';
+import { Table, Breadcrumb } from 'antd';
 
 const columns = [
   {
@@ -48,7 +48,14 @@ function Home(props) {
 
   return (
     <div className="admin">
-      <Table dataSource={data} columns={columns} />;
+      <Breadcrumb
+        style={{
+          margin: '16px 0',
+        }}
+      >
+        <Breadcrumb.Item>/</Breadcrumb.Item>
+      </Breadcrumb>
+      <Table dataSource={data} columns={columns} />
     </div>
   );
 }
