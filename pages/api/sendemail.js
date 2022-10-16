@@ -5,7 +5,10 @@ async function sendEmail(name, email, subject, message) {
   const data = JSON.stringify({
     Messages: [
       {
-        From: { Email: 'bidursapkota00@gmail.com', Name: 'Bidur Sapkota' },
+        From: {
+          Email: 'bidursapkota00@gmail.com',
+          Name: 'Smart Water Flow Team',
+        },
         To: [{ Email: email, Name: name }],
         Subject: subject,
         TextPart: message,

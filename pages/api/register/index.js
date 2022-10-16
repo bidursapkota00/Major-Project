@@ -1,5 +1,5 @@
 import nextConnect from 'next-connect';
-import { db } from '../../util/firebase';
+import { db } from '../../../util/firebase';
 import { ref, set } from 'firebase/database';
 
 const handler = nextConnect({
@@ -12,9 +12,10 @@ const handler = nextConnect({
 });
 
 handler.post(async (req, res) => {
-  const { name, email, password, number, citizenship } = req.body;
+  const { name, address, email, password, number, citizenship } = req.body;
   set(ref(db, `/users/${Date.now()}`), {
     name,
+    address,
     email,
     password,
     number,

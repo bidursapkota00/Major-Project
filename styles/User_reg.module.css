@@ -1,0 +1,16 @@
+.textarea__row {
+  margin: 20px 0;
+}
+.button_col {
+  display: flex;
+  align-items: flex-end;
+}
+.device__input {
+  margin-bottom: 20px;
+}
+.button {
+  margin-left: 20px;
+}
+.form__item {
+  margin: 0 !important;
+}
