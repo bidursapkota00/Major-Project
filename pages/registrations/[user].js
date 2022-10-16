@@ -41,12 +41,12 @@ function User(props) {
 
   const onReject = async ({ rejection }) => {
     const { name, email } = props;
-    // const response = await axios.post('/api/sendemail', {
-    //   name,
-    //   email,
-    //   subject: 'Rejection of Smart Water Meter Installation',
-    //   message: rejection,
-    // });
+    const response = await axios.post('/api/sendemail', {
+      name,
+      email,
+      subject: 'Rejection of Smart Water Meter Installation',
+      message: rejection,
+    });
     openNotification('Rejection Email Sent');
     await axios.delete('/api/register/deletenew', {
       data: { user: props.user },
@@ -62,17 +62,22 @@ function User(props) {
 
   const onAccept = async ({ acceptance, device }) => {
     const { name, email } = props;
-    // const response = await axios.post('/api/sendemail', {
-    //   name,
-    //   email,
-    //   subject: 'Smart Water Meter Installation',
-    //   message: acceptance,
-    // });
+    await axios.post('/api/sendemail', {
+      name,
+      email,
+      subject: 'Smart Water Meter Installation',
+      message: acceptance,
+    });
     openNotification('Email Sent');
     await axios.put('/api/register/updatenew', {
       user: props.user,
     });
-    openNotification('Registration Successful');
+    openNotification('Registration Request Modified');
+    await axios.post('/api/register/device', {
+      user: props.user,
+      device,
+    });
+    openNotification('Registration Success');
     form2.resetFields();
   };
 
