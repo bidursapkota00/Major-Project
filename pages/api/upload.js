@@ -2,6 +2,7 @@ import nextConnect from 'next-connect';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
+import { error } from '../../util/apierr';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -15,14 +16,7 @@ export const config = {
   },
 };
 
-const handler = nextConnect({
-  onError: (err, req, res, next) => {
-    res.status(err.http_code).end(err.message);
-  },
-  onNoMatch: (req, res) => {
-    res.status(404).end('Page is not found');
-  },
-});
+const handler = nextConnect(error);
 const upload = multer();
 
 handler.use(upload.single('file')).post(async (req, res) => {

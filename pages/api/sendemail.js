@@ -1,5 +1,6 @@
 import axios from 'axios';
 import nextConnect from 'next-connect';
+import { error } from '../../util/apierr';
 
 async function sendEmail(name, email, subject, message) {
   const data = JSON.stringify({
@@ -31,20 +32,19 @@ async function sendEmail(name, email, subject, message) {
   return res;
 }
 
-const handler = nextConnect({
-  onError: (err, req, res, next) => {
-    res.status(err.http_code).end(err.message);
-  },
-  onNoMatch: (req, res) => {
-    res.status(404).end('Page is not found');
-  },
-});
+const handler = nextConnect(error);
 
 handler.post(async (req, res) => {
   const { name, email, subject, message } = req.body;
-  const response = await sendEmail(name, email, subject, message);
-  //   console.log(response.config.data);
-  res.status(200).send({ message: 'Email Sent!' });
+  try {
+    const response = await sendEmail(name, email, subject, message);
+    console.log(response);
+    //   console.log(response.config.data);
+    res.status(200).send({ message: 'Email Sent!' });
+  } catch (error) {
+    const { response } = error;
+    res.status(response.status).send({ message: response.statusText });
+  }
 });
 
 export default handler;

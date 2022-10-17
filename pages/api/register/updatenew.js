@@ -1,15 +1,9 @@
 import nextConnect from 'next-connect';
 import { db } from '../../../util/firebase';
 import { ref, update } from 'firebase/database';
+import { error } from '../../../util/apierr';
 
-const handler = nextConnect({
-  onError: (err, req, res, next) => {
-    res.status(err.http_code).end(err.message);
-  },
-  onNoMatch: (req, res) => {
-    res.status(404).end('Page is not found');
-  },
-});
+const handler = nextConnect(error);
 
 handler.put(async (req, res) => {
   const { user } = req.body;
