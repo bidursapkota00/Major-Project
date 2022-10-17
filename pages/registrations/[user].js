@@ -15,6 +15,7 @@ import styles from '../../styles/User_reg.module.css';
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -96,10 +97,14 @@ function User(props) {
         }}
       >
         <Breadcrumb.Item>
-          <a href="/">Home</a>
+          <Link href="/">
+            <a>Home</a>
+          </Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <a href="/registrations">New Registration Requests</a>
+          <Link href="/registrations">
+            <a>New Registration Requests</a>
+          </Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>{props.user}</Breadcrumb.Item>
       </Breadcrumb>

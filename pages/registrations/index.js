@@ -1,6 +1,7 @@
 import { db } from '../../util/firebase';
 import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 import { Table, Breadcrumb, Anchor } from 'antd';
+import NextLink from 'next/link';
 
 const { Link } = Anchor;
 
@@ -35,7 +36,9 @@ function Home(props) {
         }}
       >
         <Breadcrumb.Item>
-          <a href="/">Home</a>
+          <NextLink href="/">
+            <a>Home</a>
+          </NextLink>
         </Breadcrumb.Item>
         <Breadcrumb.Item>New Registration Requests /</Breadcrumb.Item>
       </Breadcrumb>
