@@ -34,6 +34,9 @@ function Home(props) {
           margin: '16px 0',
         }}
       >
+        <Breadcrumb.Item>
+          <a href="/">Home</a>
+        </Breadcrumb.Item>
         <Breadcrumb.Item>New Registration Requests /</Breadcrumb.Item>
       </Breadcrumb>
       <Table dataSource={data} columns={columns} />

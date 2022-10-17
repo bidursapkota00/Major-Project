@@ -1,11 +1,5 @@
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, Typography } from 'antd';
+import { TeamOutlined, HomeFilled } from '@ant-design/icons';
+import { Layout, Menu, Typography } from 'antd';
 import React, { useState } from 'react';
 const { Header, Content, Footer, Sider } = Layout;
 import { useRouter } from 'next/router';
@@ -23,11 +17,8 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem('Option 1', '1', <PieChartOutlined />),
-  getItem('Option 2', '2', <DesktopOutlined />),
-  getItem('User', 'sub1', <UserOutlined />),
+  getItem('Home', '/', <HomeFilled />),
   getItem('Requests', '/registrations', <TeamOutlined />),
-  getItem('Files', '9', <FileOutlined />),
 ];
 
 const Container = ({ children }) => {
@@ -44,9 +35,13 @@ const Container = ({ children }) => {
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
+        <div className={styles.logo__cont}>
+          <img src="/logo2.png" alt="" className={styles.logo} />
+        </div>
         <Menu
           theme="dark"
           mode="inline"
+          defaultSelectedKeys={['/']}
           items={items}
           onClick={(e) => router.push(e.key)}
         />

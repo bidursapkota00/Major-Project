@@ -2,7 +2,10 @@ import axios from 'axios';
 import nextConnect from 'next-connect';
 import { error } from '../../util/apierr';
 
-async function sendEmail(name, email, subject, message) {
+const handler = nextConnect(error);
+
+handler.post(async (req, res) => {
+  const { name, email, subject, message } = req.body;
   const data = JSON.stringify({
     Messages: [
       {
@@ -28,22 +31,13 @@ async function sendEmail(name, email, subject, message) {
     },
   };
 
-  const res = await axios(config);
-  return res;
-}
-
-const handler = nextConnect(error);
-
-handler.post(async (req, res) => {
-  const { name, email, subject, message } = req.body;
   try {
-    const response = await sendEmail(name, email, subject, message);
-    console.log(response);
-    //   console.log(response.config.data);
-    res.status(200).send({ message: 'Email Sent!' });
+    await axios(config);
+    res.status(200).send({ message: 'Email Sent!', status: 200 });
   } catch (error) {
     const { response } = error;
-    res.status(response.status).send({ message: response.statusText });
+    const { status, statusText } = response;
+    res.status(status).send({ message: statusText, status });
   }
 });
 

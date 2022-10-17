@@ -14,6 +14,7 @@ import {
 import styles from '../../styles/User_reg.module.css';
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -29,6 +30,8 @@ const title = [
 const keys = ['name', 'address', 'email', 'number', 'password', 'citizenship'];
 
 function User(props) {
+  const router = useRouter();
+
   const [form1] = Form.useForm();
   const [form2] = Form.useForm();
 
@@ -41,49 +44,49 @@ function User(props) {
 
   const onReject = async ({ rejection }) => {
     const { name, email } = props;
-    const response = await axios.post('/api/sendemail', {
-      name,
-      email,
-      subject: 'Rejection of Smart Water Meter Installation',
-      message: rejection,
-    });
-    openNotification('Rejection Email Sent');
-    await axios.delete('/api/register/deletenew', {
-      data: { user: props.user },
-    });
-    openNotification('Registration Request Deleted');
-    form1.resetFields();
-  };
-
-  const onRejectFailed = (errorInfo) => {
-    console.log(errorInfo);
-    openNotification('Sending Rejection Email Failed');
+    try {
+      const response = await axios.post('/api/sendemail', {
+        name,
+        email,
+        subject: 'Rejection of Smart Water Meter Installation',
+        message: rejection,
+      });
+      openNotification(response.data.message);
+      await axios.delete('/api/register/deletenew', {
+        data: { user: props.user },
+      });
+      openNotification('Registration Request Deleted');
+      form1.resetFields();
+      setTimeout(() => router.push('/'), 1000);
+    } catch (error) {
+      openNotification(error.message);
+    }
   };
 
   const onAccept = async ({ acceptance, device }) => {
     const { name, email } = props;
-    await axios.post('/api/sendemail', {
-      name,
-      email,
-      subject: 'Smart Water Meter Installation',
-      message: acceptance,
-    });
-    openNotification('Email Sent');
-    await axios.put('/api/register/updatenew', {
-      user: props.user,
-    });
-    openNotification('Registration Request Modified');
-    await axios.post('/api/register/device', {
-      user: props.user,
-      device,
-    });
-    openNotification('Registration Success');
-    form2.resetFields();
-  };
-
-  const onAcceptFailed = (errorInfo) => {
-    console.log(errorInfo);
-    openNotification('Sending Rejection Email Failed');
+    try {
+      await axios.post('/api/sendemail', {
+        name,
+        email,
+        subject: 'Smart Water Meter Installation',
+        message: `YOUR DEVICE ID IS ${device} \n` + acceptance,
+      });
+      openNotification('Email Sent');
+      await axios.put('/api/register/updatenew', {
+        user: props.user,
+      });
+      openNotification('Registration Request Modified');
+      await axios.post('/api/register/device', {
+        user: props.user,
+        device,
+      });
+      openNotification('Registration Success');
+      form2.resetFields();
+      setTimeout(() => router.push('/'), 1000);
+    } catch (error) {
+      openNotification(error.message);
+    }
   };
   return (
     <div className="admin">
@@ -92,7 +95,12 @@ function User(props) {
           margin: '16px 0',
         }}
       >
-        <Breadcrumb.Item>New Registration Requests</Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <a href="/">Home</a>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <a href="/registrations">New Registration Requests</a>
+        </Breadcrumb.Item>
         <Breadcrumb.Item>{props.user}</Breadcrumb.Item>
       </Breadcrumb>
       <Row>
@@ -119,7 +127,6 @@ function User(props) {
           span: 24,
         }}
         onFinish={onReject}
-        onFinishFailed={onRejectFailed}
         autoComplete="off"
       >
         <Row className={styles.textarea__row}>
@@ -159,7 +166,6 @@ function User(props) {
           span: 24,
         }}
         onFinish={onAccept}
-        onFinishFailed={onAcceptFailed}
         autoComplete="off"
       >
         <Row className={styles.textarea__row}>
