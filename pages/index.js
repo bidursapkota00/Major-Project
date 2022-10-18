@@ -51,7 +51,7 @@ function Home(props) {
           margin: '16px 0',
         }}
       >
-        <Breadcrumb.Item>/</Breadcrumb.Item>
+        <Breadcrumb.Item>home /</Breadcrumb.Item>
       </Breadcrumb>
       <Table dataSource={data} columns={columns} />
     </div>
