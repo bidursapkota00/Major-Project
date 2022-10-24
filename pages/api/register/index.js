@@ -1,22 +1,23 @@
 import nextConnect from 'next-connect';
-import { db } from '../../../util/firebase';
-import { ref, set } from 'firebase/database';
 import { error } from '../../../util/apierr';
+import User from '../../../modal/user';
+import db from '../../../util/mongodb';
 
 const handler = nextConnect(error);
 
 handler.post(async (req, res) => {
   const { name, address, email, password, number, citizenship } = req.body;
-  set(ref(db, `/users/${Date.now()}`), {
+  await db.connect();
+  const newUser = new User({
     name,
-    address,
     email,
+    address,
     password,
     number,
     citizenship,
-    new: true,
   });
-  res.status(200).send({ message: 'Successfully Registered' });
+  const user = await newUser.save();
+  res.send({ message: 'User Created', user });
 });
 
 export default handler;

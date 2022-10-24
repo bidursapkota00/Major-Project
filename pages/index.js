@@ -1,6 +1,7 @@
-import { db } from '../util/firebase';
-import { ref, onValue, query } from 'firebase/database';
 import { Table, Breadcrumb, Anchor } from 'antd';
+import db from '../util/mongodb';
+import User from '../modal/user';
+import Device from '../modal/device';
 
 const { Link } = Anchor;
 
@@ -32,18 +33,7 @@ const columns = [
   },
 ];
 
-function Home(props) {
-  const data = Object.keys(props).map((id) => {
-    return {
-      key: id,
-      ...props[id].userData,
-      unit: props[id].unit ? props[id].unit : 0,
-      due: props[id].due ? props[id].due : 0,
-      id,
-    };
-  });
-  console.log(props);
-
+function Home({ data }) {
   return (
     <div className="admin">
       <Breadcrumb
@@ -61,28 +51,22 @@ function Home(props) {
 export default Home;
 
 export async function getServerSideProps(context) {
-  let devices, user;
-  const devicesRef = ref(db, '/devices/');
-  onValue(devicesRef, (snapshot) => {
-    devices = snapshot.val();
-  });
-  if (devices) {
-    const deviceIds = Object.keys(devices);
-    deviceIds.forEach((id) => {
-      const userRef = query(ref(db, `/users/${devices[id].user}`));
-      onValue(userRef, (snapshot) => {
-        user = snapshot.val();
+  await db.connect();
+  const devices = await Device.find().select('user total_litre');
+  let data = [];
+  await Promise.all(
+    devices.map(async (d) => {
+      const user = await User.findById(d.user.toString()).select('name -_id');
+      data.push({
+        key: d._id,
+        id: d._id,
+        name: user.name,
+        unit: d.total_litre / 1000,
+        due: d.total_litre < 20000 ? 80 : d.total_litre / 100,
       });
-      if (user) {
-        devices[id].userData = user;
-        user = null;
-      }
-    });
-    return {
-      props: { ...devices },
-    };
-  }
+    })
+  );
   return {
-    props: {},
+    props: { data },
   };
 }

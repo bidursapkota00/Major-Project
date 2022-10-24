@@ -1,17 +1,19 @@
 import nextConnect from 'next-connect';
-import { db } from '../../../util/firebase';
-import { ref, set } from 'firebase/database';
 import { error } from '../../../util/apierr';
+import Device from '../../../modal/device';
+import db from '../../../util/mongodb';
 
 const handler = nextConnect(error);
 
 handler.post(async (req, res) => {
   const { device, user } = req.body;
-  set(ref(db, `/devices/${device}`), {
+  await db.connect();
+  const newDevice = new Device({
+    _id: device,
     user,
-    stream: 'OFF',
   });
-  res.status(200).send({ message: 'Successfully Registered' });
+  const devicee = await newDevice.save();
+  res.send({ message: 'Device Created', devicee });
 });
 
 export default handler;
