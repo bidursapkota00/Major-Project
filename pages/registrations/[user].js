@@ -1,5 +1,3 @@
-import { db } from '../../util/firebase';
-import { ref, onValue, query, update } from 'firebase/database';
 import {
   Col,
   Row,
@@ -16,6 +14,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import User from '../../modal/user';
+import db from '../../util/mongodb';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -30,7 +30,7 @@ const title = [
 ];
 const keys = ['name', 'address', 'email', 'number', 'password', 'citizenship'];
 
-function User(props) {
+function UserDetail({ data }) {
   const router = useRouter();
 
   const [form1] = Form.useForm();
@@ -44,7 +44,7 @@ function User(props) {
   };
 
   const onReject = async ({ rejection }) => {
-    const { name, email } = props;
+    const { name, email } = data;
     try {
       const response = await axios.post('/api/sendemail', {
         name,
@@ -54,7 +54,7 @@ function User(props) {
       });
       openNotification(response.data.message);
       await axios.delete('/api/register/deletenew', {
-        data: { user: props.user },
+        data: { user: data._id },
       });
       openNotification('Registration Request Deleted');
       form1.resetFields();
@@ -65,8 +65,13 @@ function User(props) {
   };
 
   const onAccept = async ({ acceptance, device }) => {
-    const { name, email } = props;
+    const { name, email } = data;
     try {
+      await axios.post('/api/register/device', {
+        user: data._id,
+        device,
+      });
+      openNotification('Registration Success');
       await axios.post('/api/sendemail', {
         name,
         email,
@@ -75,14 +80,9 @@ function User(props) {
       });
       openNotification('Email Sent');
       await axios.put('/api/register/updatenew', {
-        user: props.user,
+        user: data._id,
       });
       openNotification('Registration Request Modified');
-      await axios.post('/api/register/device', {
-        user: props.user,
-        device,
-      });
-      openNotification('Registration Success');
       form2.resetFields();
       setTimeout(() => router.push('/'), 1000);
     } catch (error) {
@@ -106,7 +106,7 @@ function User(props) {
             <a>New Registration Requests</a>
           </Link>
         </Breadcrumb.Item>
-        <Breadcrumb.Item>{props.user}</Breadcrumb.Item>
+        <Breadcrumb.Item>{data._id}</Breadcrumb.Item>
       </Breadcrumb>
       <Row>
         <Col span={6}>
@@ -119,7 +119,7 @@ function User(props) {
         <Col span={18}>
           {keys.map((k, i) => (
             <Row key={i}>
-              <Title level={5}>&emsp;:&emsp;&emsp;{props[k]}</Title>
+              <Title level={5}>&emsp;:&emsp;&emsp;{data[k]}</Title>
             </Row>
           ))}
         </Col>
@@ -220,17 +220,14 @@ function User(props) {
   );
 }
 
-export default User;
+export default UserDetail;
 
 export async function getServerSideProps(context) {
   const { params } = context;
   const { user } = params;
-  let data;
-  const que = query(ref(db, `/users/${user}`));
-  onValue(que, (snapshot) => {
-    data = snapshot.val();
-  });
+  await db.connect();
+  const user_detail = await User.findById(user);
   return {
-    props: { ...data, user },
+    props: { data: JSON.parse(JSON.stringify(user_detail)) },
   };
 }

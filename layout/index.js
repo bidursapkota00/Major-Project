@@ -36,7 +36,12 @@ const Container = ({ children }) => {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className={styles.logo__cont}>
-          <img src="/logo2.png" alt="" className={styles.logo} />
+          <img
+            src="/logo2.png"
+            alt=""
+            className={styles.logo}
+            style={{ width: collapsed ? '80%' : '50%' }}
+          />
         </div>
         <Menu
           theme="dark"

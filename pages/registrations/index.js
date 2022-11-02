@@ -1,7 +1,7 @@
-import { db } from '../../util/firebase';
-import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 import { Table, Breadcrumb, Anchor } from 'antd';
 import NextLink from 'next/link';
+import db from '../../util/mongodb';
+import User from '../../modal/user';
 
 const { Link } = Anchor;
 
@@ -23,11 +23,7 @@ const columns = [
   },
 ];
 
-function Home(props) {
-  const data = Object.keys(props).map((pk) => {
-    return { ...props[pk], key: pk };
-  });
-
+function Home({ data }) {
   return (
     <div className="admin">
       <Breadcrumb
@@ -50,12 +46,16 @@ function Home(props) {
 export default Home;
 
 export async function getServerSideProps(context) {
-  let data;
-  const que = query(ref(db, '/users/'), orderByChild('new'), equalTo(true));
-  onValue(que, (snapshot) => {
-    data = snapshot.val();
+  await db.connect();
+  const users = await User.find({ new: true }).select('name number');
+  const data = users.map((user) => {
+    return {
+      key: user._id.toString(),
+      name: user.name,
+      number: user.number,
+    };
   });
   return {
-    props: { ...data },
+    props: { data },
   };
 }

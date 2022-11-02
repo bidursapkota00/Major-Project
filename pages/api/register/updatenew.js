@@ -8,6 +8,7 @@ const handler = nextConnect(error);
 handler.put(async (req, res) => {
   const { user } = req.body;
   await db.connect();
+  console.log(user);
   const userr = await User.findById(user);
   if (userr) {
     userr.new = false;
