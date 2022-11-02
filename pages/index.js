@@ -1,8 +1,8 @@
 import { Table, Breadcrumb, Anchor } from 'antd';
 import db from '../util/mongodb';
-import User from '../modal/user';
-import Device from '../modal/device';
+import { Models } from '../modal';
 
+const { Device } = Models;
 const { Link } = Anchor;
 
 const columns = [
@@ -52,20 +52,19 @@ export default Home;
 
 export async function getServerSideProps(context) {
   await db.connect();
-  const devices = await Device.find().select('user total_litre');
-  let data = [];
-  await Promise.all(
-    devices.map(async (d) => {
-      const user = await User.findById(d.user.toString()).select('name -_id');
-      data.push({
-        key: d._id,
-        id: d._id,
-        name: user.name,
-        unit: d.total_litre / 1000,
-        due: d.total_litre < 20000 ? 80 : d.total_litre / 100,
-      });
-    })
-  );
+  const devices = await Device.find()
+    .select('user total_litre')
+    .populate({ path: 'user', select: 'name -_id' });
+  const data = devices.map((device) => {
+    const unit = device.total_litre / 1000;
+    return {
+      key: device._id,
+      id: device._id,
+      name: device.user.name,
+      unit,
+      due: unit > 20 ? unit * 8 : 80,
+    };
+  });
   return {
     props: { data },
   };
