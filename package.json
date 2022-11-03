@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p $PORT",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "next-connect": "^0.13.0",
     "node-mailjet": "^5.1.1",
     "react": "18.2.0",
+    "react-cookie": "^4.1.1",
     "react-dom": "18.2.0",
     "streamifier": "0.1.1"
   },

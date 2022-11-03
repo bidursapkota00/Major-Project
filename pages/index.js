@@ -1,20 +1,14 @@
-import { Table, Breadcrumb, Anchor } from 'antd';
+import { Table, Breadcrumb } from 'antd';
 import db from '../util/mongodb';
 import { Models } from '../modal';
 
 const { Device } = Models;
-const { Link } = Anchor;
 
 const columns = [
   {
     title: 'Device Id',
     dataIndex: 'id',
     key: 'id',
-    render: (text, data) => (
-      <Anchor>
-        <Link href={`/registrations/${data.key}`} title={text} />
-      </Anchor>
-    ),
   },
   {
     title: 'Name',

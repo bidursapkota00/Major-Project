@@ -1,10 +1,12 @@
 import { TeamOutlined, HomeFilled } from '@ant-design/icons';
 import { Layout, Menu, Typography } from 'antd';
 import React, { useState } from 'react';
-const { Header, Content, Footer, Sider } = Layout;
 import { useRouter } from 'next/router';
 import styles from '../styles/Layout.module.css';
+import { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 
+const { Header, Content, Footer, Sider } = Layout;
 const { Title } = Typography;
 
 function getItem(label, key, icon, children) {
@@ -24,7 +26,13 @@ const items = [
 const Container = ({ children }) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
-  return (
+  const [cookies] = useCookies(['isLoggedIn']);
+
+  useEffect(() => {
+    !cookies.isLoggedIn && router.push('/login');
+  }, []);
+
+  return cookies.isLoggedIn ? (
     <Layout
       style={{
         minHeight: '100vh',
@@ -78,6 +86,8 @@ const Container = ({ children }) => {
         </Footer>
       </Layout>
     </Layout>
+  ) : (
+    <></>
   );
 };
 export default Container;
