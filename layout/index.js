@@ -29,9 +29,12 @@ const Container = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [cookies] = useCookies(['isLoggedIn']);
 
+  const [menu, setMenu] = useState('');
+
   useEffect(() => {
     !cookies.isLoggedIn && router.push('/login');
-  }, []);
+    setMenu('/' + router.asPath.split('/').at(-1));
+  }, [router.asPath]);
 
   return cookies.isLoggedIn ? (
     <Layout
@@ -52,10 +55,11 @@ const Container = ({ children }) => {
             style={{ width: collapsed ? '80%' : '50%' }}
           />
         </div>
+        {console.log(menu)}
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['/']}
+          selectedKeys={[menu]}
           items={items}
           onClick={(e) => router.push(e.key)}
         />
