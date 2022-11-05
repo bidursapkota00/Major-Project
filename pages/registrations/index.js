@@ -1,7 +1,10 @@
-import { Table, Breadcrumb, Anchor } from 'antd';
+import { Table, Breadcrumb, Anchor, notification } from 'antd';
 import NextLink from 'next/link';
-import db from '../../util/mongodb';
-import User from '../../modal/user';
+import dynamic from 'next/dynamic';
+import React, { useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const { Link } = Anchor;
 
@@ -23,7 +26,29 @@ const columns = [
   },
 ];
 
-function Home({ data }) {
+function Register() {
+  const openNotification = (message, description) => {
+    notification.open({
+      message,
+      description,
+    });
+  };
+  const router = useRouter();
+  const [cookies] = useCookies(['isLoggedIn']);
+
+  const [data, setData] = useState([]);
+  const getData = async () => {
+    try {
+      const response = await axios.get('/api/register/registrations');
+      setData(response.data.message);
+    } catch (error) {
+      openNotification(error, '');
+    }
+  };
+  useEffect(() => {
+    !cookies.isLoggedIn ? router.push('/login') : getData();
+  }, []);
+
   return (
     <div className="admin">
       <Breadcrumb
@@ -43,19 +68,6 @@ function Home({ data }) {
   );
 }
 
-export default Home;
-
-export async function getServerSideProps(context) {
-  await db.connect();
-  const users = await User.find({ new: true }).select('name number');
-  const data = users.map((user) => {
-    return {
-      key: user._id.toString(),
-      name: user.name,
-      number: user.number,
-    };
-  });
-  return {
-    props: { data },
-  };
-}
+export default dynamic(() => Promise.resolve(Register), {
+  ssr: false,
+});

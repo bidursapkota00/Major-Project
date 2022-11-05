@@ -10,12 +10,12 @@ import {
   notification,
 } from 'antd';
 import styles from '../../styles/User_reg.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import User from '../../modal/user';
-import db from '../../util/mongodb';
+import { useCookies } from 'react-cookie';
+import dynamic from 'next/dynamic';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -30,8 +30,9 @@ const title = [
 ];
 const keys = ['name', 'address', 'email', 'number', 'password', 'citizenship'];
 
-function UserDetail({ data }) {
+function UserDetail() {
   const router = useRouter();
+  const { user } = router.query;
 
   const [form1] = Form.useForm();
   const [form2] = Form.useForm();
@@ -42,6 +43,21 @@ function UserDetail({ data }) {
       description,
     });
   };
+  const [cookies] = useCookies(['isLoggedIn']);
+
+  const [data, setData] = useState({});
+  const getData = async () => {
+    if (!user) return;
+    try {
+      const response = await axios.get(`/api/register/${user}`);
+      setData(response.data.message);
+    } catch (error) {
+      openNotification(error, '');
+    }
+  };
+  useEffect(() => {
+    !cookies.isLoggedIn ? router.push('/login') : getData();
+  }, [user]);
 
   const onReject = async ({ rejection }) => {
     const { name, email } = data;
@@ -220,14 +236,6 @@ function UserDetail({ data }) {
   );
 }
 
-export default UserDetail;
-
-export async function getServerSideProps(context) {
-  const { params } = context;
-  const { user } = params;
-  await db.connect();
-  const user_detail = await User.findById(user);
-  return {
-    props: { data: JSON.parse(JSON.stringify(user_detail)) },
-  };
-}
+export default dynamic(() => Promise.resolve(UserDetail), {
+  ssr: false,
+});

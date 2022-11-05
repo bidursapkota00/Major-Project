@@ -1,8 +1,9 @@
-import { Table, Breadcrumb } from 'antd';
-import db from '../util/mongodb';
-import { Models } from '../modal';
-
-const { Device } = Models;
+import { Table, Breadcrumb, notification } from 'antd';
+import dynamic from 'next/dynamic';
+import React, { useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const columns = [
   {
@@ -27,7 +28,31 @@ const columns = [
   },
 ];
 
-function Home({ data }) {
+function Home() {
+  const openNotification = (message, description) => {
+    notification.open({
+      message,
+      description,
+    });
+  };
+
+  const [cookies] = useCookies(['isLoggedIn']);
+  const router = useRouter();
+
+  const [data, setData] = useState([]);
+  const getData = async () => {
+    try {
+      const response = await axios.get('/api/home');
+      setData(response.data.message);
+    } catch (error) {
+      openNotification(error, '');
+    }
+  };
+
+  useEffect(() => {
+    !cookies.isLoggedIn ? router.push('/login') : getData();
+  }, []);
+
   return (
     <div className="admin">
       <Breadcrumb
@@ -42,24 +67,6 @@ function Home({ data }) {
   );
 }
 
-export default Home;
-
-export async function getServerSideProps(context) {
-  await db.connect();
-  const devices = await Device.find()
-    .select('user total_litre')
-    .populate({ path: 'user', select: 'name -_id' });
-  const data = devices.map((device) => {
-    const unit = device.total_litre / 1000;
-    return {
-      key: device._id,
-      id: device._id,
-      name: device.user.name,
-      unit,
-      due: unit > 20 ? unit * 8 : 80,
-    };
-  });
-  return {
-    props: { data },
-  };
-}
+export default dynamic(() => Promise.resolve(Home), {
+  ssr: false,
+});

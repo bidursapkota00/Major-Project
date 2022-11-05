@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import styles from '../styles/Layout.module.css';
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
+import dynamic from 'next/dynamic';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Title } = Typography;
@@ -90,4 +91,7 @@ const Container = ({ children }) => {
     <></>
   );
 };
-export default Container;
+
+export default dynamic(() => Promise.resolve(Container), {
+  ssr: false,
+});
