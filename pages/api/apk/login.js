@@ -1,16 +1,20 @@
 import nextConnect from 'next-connect';
 import { error } from '../../../util/apierr';
 import db from '../../../util/mongodb';
-import AdminUser from '../../../modal/admin';
+import { Models } from '../../../modal';
+
+const { Device } = Models;
 
 const handler = nextConnect(error);
 
 handler.post(async (req, res) => {
-  const { email, password } = req.body;
+  const { device, pass } = req.body;
   await db.connect();
-  const user = await AdminUser.findOne({ email });
-  if (user && user.password == password) {
-    res.send({ message: true, user });
+  const devicee = await Device.findById(device)
+    .select('user')
+    .populate({ path: 'user', select: 'password -_id' });
+  if (devicee && devicee.user.password == pass) {
+    res.send({ message: true, devicee });
   } else {
     res.status(401).send({ message: 'Invalid Username or Password' });
   }
