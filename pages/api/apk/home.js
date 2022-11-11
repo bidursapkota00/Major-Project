@@ -9,6 +9,7 @@ const handler = nextConnect(error);
 
 handler.post(async (req, res) => {
   const { device } = req.body;
+  console.log(req.body, device);
   await db.connect();
   const devicee = await Device.findById(device)
     .select('user stream total_litre datas')
