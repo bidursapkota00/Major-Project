@@ -9,11 +9,10 @@ const handler = nextConnect(error);
 
 handler.post(async (req, res) => {
   const { device } = req.body;
-  console.log(req.body, device);
   await db.connect();
   const devicee = await Device.findById(device)
-    .select('user stream total_litre datas')
-    .populate({ path: 'user', select: 'name' });
+    .select('user total_litre')
+    .populate({ path: 'user', select: 'name address' });
   res.send({ message: devicee });
 });
 
