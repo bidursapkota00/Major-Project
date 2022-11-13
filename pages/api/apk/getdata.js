@@ -9,9 +9,10 @@ const handler = nextConnect(error);
 
 handler.post(async (req, res) => {
   const { device, date } = req.body;
-  const now = new Date(date);
+  let now = new Date(date);
+  now = new Date(now.setHours(now.getHours(), 0, 0, 0));
   let hrAfter = new Date(now);
-  hrAfter = new Date(hrAfter.setHours(hrAfter.getHours() + 1, 0, 0, 0));
+  hrAfter = new Date(hrAfter.setHours(hrAfter.getHours() + 1));
   await db.connect();
   const response = await Device.aggregate([
     { $match: { _id: device } },
@@ -31,14 +32,18 @@ handler.post(async (req, res) => {
       },
     },
   ]);
-  const { datas } = response[0];
-  let labels = datas.map((d) => d.time.getMinutes());
-  const data = datas.map((d) => d.litre);
-  if (labels[0]) {
-    labels.splice(0, 0, '');
-    data.splice(0, 0, data[0]);
+  if (response.length) {
+    const { datas } = response[0];
+    let labels = datas.map((d) => d.time.getMinutes());
+    const data = datas.map((d) => d.litre);
+    if (labels[0]) {
+      labels.splice(0, 0, '');
+      data.splice(0, 0, data[0]);
+    }
+    res.send({ message: { labels, data } });
+  } else {
+    res.send({ message: 'No data Found' });
   }
-  res.send({ message: { labels, data } });
 });
 
 export default handler;
