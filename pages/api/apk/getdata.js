@@ -13,7 +13,7 @@ handler.post(async (req, res) => {
   let hrAfter = new Date(now);
   hrAfter = new Date(hrAfter.setHours(hrAfter.getHours() + 1, 0, 0, 0));
   await db.connect();
-  const dev = await Device.aggregate([
+  const response = await Device.aggregate([
     { $match: { _id: device } },
     { $unwind: '$datas' },
     {
@@ -31,7 +31,14 @@ handler.post(async (req, res) => {
       },
     },
   ]);
-  res.send({ message: dev });
+  const { datas } = response[0];
+  let labels = datas.map((d) => d.time.getMinutes());
+  const data = datas.map((d) => d.litre);
+  if (labels[0]) {
+    labels.splice(0, 0, '');
+    data.splice(0, 0, data[0]);
+  }
+  res.send({ message: { labels, data } });
 });
 
 export default handler;
