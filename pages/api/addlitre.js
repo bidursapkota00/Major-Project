@@ -21,7 +21,7 @@ handler.post(async (req, res) => {
     device.datas.push({ litre });
     device.total_litre = litre;
     await device.save();
-    res.send({ message: 'Data Added Successfully', device });
+    res.send({ message: 'Data Added Successfully' });
   } else {
     res.status(404).send({ message: 'Device Not Found' });
   }
