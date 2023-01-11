@@ -9,12 +9,6 @@ const handler = nextConnect(error);
 handler.post(async (req, res) => {
   const { name, email } = req.body;
   const otp = Math.floor(100000 + Math.random() * 900000);
-  await db.connect();
-  const newOtp = new Otp({
-    _id: email,
-    otp,
-  });
-  await newOtp.save();
 
   const data = JSON.stringify({
     Messages: [
@@ -43,6 +37,15 @@ handler.post(async (req, res) => {
 
   try {
     await axios(config);
+    await db.connect();
+    await Otp.replaceOne(
+      { _id: email },
+      {
+        _id: email,
+        otp,
+      },
+      { upsert: true }
+    );
     res.status(200).send({ message: 'OTP sent!', status: 200 });
   } catch (error) {
     const { response } = error;
