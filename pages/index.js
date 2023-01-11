@@ -1,15 +1,22 @@
-import { Table, Breadcrumb, notification } from 'antd';
+import { Table, Breadcrumb, notification, Anchor } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 
+const { Link } = Anchor;
+
 const columns = [
   {
     title: 'Device Id',
     dataIndex: 'id',
     key: 'id',
+    render: (text, data) => (
+      <Anchor>
+        <Link href={`/details/${data.key}`} title={text} />
+      </Anchor>
+    ),
   },
   {
     title: 'Name',
