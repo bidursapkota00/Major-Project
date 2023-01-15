@@ -52,8 +52,8 @@ function Detail() {
   const getData = async () => {
     if (!device) return;
     try {
-      await axios.get(`/api/details/${device}`);
-      openNotification('Device and User Deleted', '');
+      const res = await axios.get(`/api/details/${device}`);
+      setData(res.data.message);
     } catch (error) {
       openNotification(error, '');
     }
@@ -65,7 +65,7 @@ function Detail() {
   const delet = async () => {
     try {
       const response = await axios.delete(`/api/details/${device}`);
-      setData(response.data.message);
+      openNotification('Device and User Deleted', '');
       setTimeout(() => router.push('/'), 3000);
     } catch (error) {
       openNotification(error, '');
