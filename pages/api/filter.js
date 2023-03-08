@@ -7,14 +7,21 @@ const { User, Device } = Models;
 
 const handler = nextConnect(error);
 
-handler.get(async (req, res) => {
+handler.post(async (req, res) => {
   await db.connect();
-  const [devices, address] = await Promise.all([
-    Device.find()
-      .select('user total_litre')
-      .populate({ path: 'user', select: 'name -_id' }),
-    User.distinct('address'),
-  ]);
+  const { address, search } = req.body;
+  const users = await User.find({
+    ...(address ? { address } : {}),
+    ...(search
+      ? search.includes('@')
+        ? { email: search }
+        : { _id: search }
+      : {}),
+  });
+  const userId = users.map((u) => u._id);
+  const devices = await Device.find({ user: { $in: userId } })
+    .select('user total_litre')
+    .populate({ path: 'user', select: 'name -_id' });
   const data = devices.map((device) => {
     const unit = device.total_litre / 1000;
     return {
@@ -25,7 +32,7 @@ handler.get(async (req, res) => {
       due: unit > 20 ? unit * 8 : 80,
     };
   });
-  res.send({ message: data, address });
+  res.send({ message: data });
 });
 
 export default handler;
