@@ -7,7 +7,6 @@ import {
   notification,
   Divider,
 } from 'antd';
-import styles from '../../styles/User_reg.module.css';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -103,9 +102,17 @@ function Detail() {
         </Col>
       </Row>
       <Divider />
-      <Button danger onClick={delet}>
-        Delete
-      </Button>
+      <Row justify="space-between">
+        <Button
+          type="primary"
+          onClick={() => router.push(`/details/pay-history/${device}`)}
+        >
+          View Payment History
+        </Button>
+        <Button danger onClick={delet}>
+          Delete
+        </Button>
+      </Row>
     </div>
   );
 }

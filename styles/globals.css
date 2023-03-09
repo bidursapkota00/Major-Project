@@ -24,3 +24,16 @@ a {
     background: black;
   }
 }
+.pay-row-blue {
+  background-color: rgba(0, 0, 255, 0.25);
+}
+.pay-row-green {
+  background-color: rgba(0, 255, 0, 0.25);
+}
+.pay-table-cont {
+  height: 70vh;
+  overflow-y: scroll;
+}
+.pay-table-cont::-webkit-scrollbar {
+  display: none;
+}
