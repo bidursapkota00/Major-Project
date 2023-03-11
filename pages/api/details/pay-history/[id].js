@@ -16,10 +16,11 @@ handler.get(async (req, res) => {
       if (!accumulator[id]) {
         accumulator[id] = [];
       }
+      const date = new Date(currentValue.createdAt);
       accumulator[id].push({
         key: currentValue.createdAt,
         token: currentValue._id,
-        date: currentValue.createdAt,
+        date: date.toLocaleDateString() + ' ' + date.toLocaleTimeString(),
         status: currentValue.status,
         amount: currentValue.amount,
       });

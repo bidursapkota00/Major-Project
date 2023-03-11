@@ -22,7 +22,7 @@ handler.get(async (req, res) => {
       id: device._id,
       name: device.user.name,
       unit,
-      due: unit > 20 ? unit * 8 : 80,
+      due: unit == 0 ? 0 : unit > 20 ? unit * 8 : 80,
     };
   });
   res.send({ message: data, address });
