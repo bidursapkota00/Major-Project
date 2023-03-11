@@ -10,25 +10,8 @@ handler.get(async (req, res) => {
   await db.connect();
   const payment = await Payment.findById(id);
   if (payment) {
-    const { payments } = payment;
-    const groupById = payments.reduce((accumulator, currentValue) => {
-      const id = currentValue._id;
-      if (!accumulator[id]) {
-        accumulator[id] = [];
-      }
-      const date = new Date(currentValue.createdAt);
-      accumulator[id].push({
-        key: currentValue.createdAt,
-        token: currentValue._id,
-        date: date.toLocaleDateString() + ' ' + date.toLocaleTimeString(),
-        status: currentValue.status,
-        amount: currentValue.amount,
-      });
-      return accumulator;
-    }, {});
-    const data = Object.values(groupById);
-    res.send({ message: data });
-  } else res.send({ message: [] });
+    res.send({ message: payment });
+  } else res.status(500).send({ message: 'Something Went wrong in server' });
 });
 
 export default handler;

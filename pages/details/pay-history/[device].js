@@ -50,7 +50,24 @@ function Detail() {
     if (!device) return;
     try {
       const res = await axios.get(`/api/details/pay-history/${device}`);
-      setData(res.data.message);
+      const { payments } = res.data.message;
+      const groupById = payments.reduce((accumulator, currentValue) => {
+        const id = currentValue._id;
+        if (!accumulator[id]) {
+          accumulator[id] = [];
+        }
+        const date = new Date(currentValue.createdAt);
+        accumulator[id].push({
+          key: currentValue.createdAt,
+          token: currentValue._id,
+          date: date.toLocaleDateString() + ' ' + date.toLocaleTimeString(),
+          status: currentValue.status,
+          amount: currentValue.amount,
+        });
+        return accumulator;
+      }, {});
+      const data = Object.values(groupById);
+      setData(data);
     } catch (error) {
       openNotification(error, '');
     }
