@@ -1,4 +1,4 @@
-import { TeamOutlined, HomeFilled } from '@ant-design/icons';
+import { TeamOutlined, HomeFilled, WarningOutlined } from '@ant-design/icons';
 import { Layout, Menu, Typography } from 'antd';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
@@ -22,6 +22,7 @@ function getItem(label, key, icon, children) {
 const items = [
   getItem('Home', '/', <HomeFilled />),
   getItem('Requests', '/registrations', <TeamOutlined />),
+  getItem('Complains', '/complain', <WarningOutlined />),
 ];
 
 const Container = ({ children }) => {
